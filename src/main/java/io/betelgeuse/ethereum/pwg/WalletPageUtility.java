@@ -3,8 +3,8 @@ package io.betelgeuse.ethereum.pwg;
 public class WalletPageUtility extends HtmlUtility {
 	
 	// TODO verify version with the one in the pom.xml
-	public static final String VERSION = "0.3.0-SNAPSHOT";
-	public static final String REPOSITORY = "ethereum-paper-wallet";
+	public static final String VERSION = "0.4.0-SNAPSHOT";
+	public static final String REPOSITORY = "https://github.com/eupakhomov/paranoic-etherium-paper-wallet-tool";
 
 	public static final String TITLE = "Ethereum Paper Wallet";
 	public static final String ETHEREUM_LOGO = "/ethereum_logo.png"; 

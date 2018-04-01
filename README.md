@@ -31,7 +31,7 @@ The result of the Maven build is an executable JAR file.
 Use the following command to create a paper wallet.
 
 ```
-java -jar target/epwg-0.3.0-SNAPSHOT.jar -d C:\Users\mzi\AppData\Local\Temp -p 'test pass phrase'
+java -jar target/epwg-0.3.0-SNAPSHOT.jar -d C:\Users\Admin\AppData\Local\Temp -p 'test pass phrase'
 ```
 
 This will lead to some information on the console
@@ -40,10 +40,10 @@ This will lead to some information on the console
 creating wallet ...
 wallet file successfully created
 wallet pass phrase: 'test pass phrase'
-wallet file location: C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json
+wallet file location: C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json
 writing additional output files ...
-html wallet: C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.html
-address qr code: C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.png
+html wallet: C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.html
+address qr code: C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.png
 ```
 
 Three file are created by the tool as indicated in the output above
@@ -56,7 +56,7 @@ Three file are created by the tool as indicated in the output above
 The tool also allows to verify a provided wallet file against a provided pass phrase.
 
 ```
-java -jar target/epwg-0.3.0-SNAPSHOT.jar -p 'test pass phrase' -w  "C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json" -v
+java -jar target/epwg-0.3.0-SNAPSHOT.jar -p 'test pass phrase' -w  "C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json" -v
 ```
 
 This will lead to some information on the console
@@ -64,7 +64,7 @@ This will lead to some information on the console
 ```
 veriying wallet file ...
 wallet file successfully verified
-wallet file: C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json
+wallet file: C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json
 pass phrase: test pass phrase
 ```
 
@@ -73,7 +73,7 @@ pass phrase: test pass phrase
 The tool further allows to create an offline transaction for provided wallet details
 
 ```
-java -jar target/epwg-0.3.0-SNAPSHOT.jar -p 'test pass phrase' -w  "C:\Users\mzi\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json" -t -t 0x025403ff4c543c660423543a9c5a3cc2a02e2f1f -a 0.0123
+java -jar target/epwg-0.3.0-SNAPSHOT.jar -p 'test pass phrase' -w  "C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json" -t -t 0x025403ff4c543c660423543a9c5a3cc2a02e2f1f -a 0.0123
 ```
 
 leading to the following output.
