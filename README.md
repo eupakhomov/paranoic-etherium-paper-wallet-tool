@@ -4,7 +4,7 @@
 
 Command line tool to create (offline) Ethereum paper wallets.
 Paranoic version of [Matthias Zimmermann tool](https://github.com/matthiaszimmermann/ethereum-paper-wallet)
-with cut off dependencies using fragments of [web3j](https://github.com/web3j/web3j) related to cryptographic functionality.
+with cut off dependencies using ported fragments of [web3j](https://github.com/web3j/web3j) related to cryptographic functionality.
 
 ## Demo Output
 
