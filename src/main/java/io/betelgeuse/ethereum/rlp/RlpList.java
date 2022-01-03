@@ -3,9 +3,7 @@ package io.betelgeuse.ethereum.rlp;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * RLP list type.
- */
+/** RLP list type. */
 public class RlpList implements RlpType {
     private final List<RlpType> values;
 

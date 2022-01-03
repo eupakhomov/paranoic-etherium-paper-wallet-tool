@@ -3,11 +3,9 @@ package io.betelgeuse.ethereum.rlp;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-/**
- * RLP string type.
- */
+/** RLP string type. */
 public class RlpString implements RlpType {
-    private static final byte[] EMPTY = new byte[]{ };
+    private static final byte[] EMPTY = new byte[] {};
 
     private final byte[] value;
 
@@ -24,21 +22,25 @@ public class RlpString implements RlpType {
     }
 
     public static RlpString create(byte value) {
-        return new RlpString(new byte[]{ value });
+        return new RlpString(new byte[] {value});
     }
 
     public static RlpString create(BigInteger value) {
         // RLP encoding only supports positive integer values
-        if (value.signum() < 1) {
+        if (value == null || value.signum() < 1) {
             return new RlpString(EMPTY);
         } else {
             byte[] bytes = value.toByteArray();
-            if (bytes[0] == 0) {  // remove leading zero
+            if (bytes[0] == 0) { // remove leading zero
                 return new RlpString(Arrays.copyOfRange(bytes, 1, bytes.length));
             } else {
                 return new RlpString(bytes);
             }
         }
+    }
+
+    public static RlpString create(long value) {
+        return create(BigInteger.valueOf(value));
     }
 
     public static RlpString create(String value) {
@@ -47,13 +49,16 @@ public class RlpString implements RlpType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         RlpString rlpString = (RlpString) o;
 
         return Arrays.equals(value, rlpString.value);
-
     }
 
     @Override

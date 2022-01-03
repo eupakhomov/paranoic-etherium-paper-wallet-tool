@@ -1,9 +1,8 @@
 package io.betelgeuse.ethereum.pwg;
 
 public class WalletPageUtility extends HtmlUtility {
-	
-	// TODO verify version with the one in the pom.xml
-	public static final String VERSION = "0.4.0-SNAPSHOT";
+
+	public static final String VERSION = "1.0.0-SNAPSHOT";
 	public static final String REPOSITORY = "https://github.com/eupakhomov/paranoic-etherium-paper-wallet-tool";
 
 	public static final String TITLE = "Ethereum Paper Wallet";
@@ -115,6 +114,11 @@ public class WalletPageUtility extends HtmlUtility {
 		HtmlUtility.addContent(html, wallet.getFileName());
 		HtmlUtility.addCloseDiv(html);
 		HtmlUtility.addParagraph(html, "File Name", CSS_CAPTION);
+
+		HtmlUtility.addOpenDiv(html, CSS_CONTENT);
+		HtmlUtility.addContent(html, wallet.getMnemonic());
+		HtmlUtility.addCloseDiv(html);
+		HtmlUtility.addParagraph(html, "Mnemonic", CSS_CAPTION);
 		
 		HtmlUtility.addCloseDiv(html);		
 		HtmlUtility.addCloseDiv(html);		

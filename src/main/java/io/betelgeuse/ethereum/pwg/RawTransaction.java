@@ -1,84 +1,138 @@
 package io.betelgeuse.ethereum.pwg;
 
+import io.betelgeuse.ethereum.transaction.ITransaction;
+import io.betelgeuse.ethereum.transaction.LegacyTransaction;
+import io.betelgeuse.ethereum.transaction.Transaction1559;
+import io.betelgeuse.ethereum.transaction.TransactionType;
+
 import java.math.BigInteger;
 
 /**
- * <p>Transaction class used for signing transactions locally.<br>
- * For the specification, refer to p4 of the <a href="http://gavwood.com/paper.pdf">
- * yellow paper</a>.</p>
+ * Transaction class used for signing transactions locally.<br>
+ * For the specification, refer to p4 of the <a href="http://gavwood.com/paper.pdf">yellow
+ * paper</a>.
  */
 public class RawTransaction {
-    // default as per https://github.com/ethereum/wiki/wiki/JSON-RPC#eth_sendtransaction
-    public static final String DEFAULT_GAS = Numeric.toHexStringWithPrefix(BigInteger.valueOf(9000));
 
-    private BigInteger nonce;
-    private BigInteger gasPrice;
-    private BigInteger gasLimit;
-    private String to;
-    private BigInteger value;
-    private String data;
+    private final ITransaction transaction;
 
-    private RawTransaction(BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
-                           BigInteger value, String data) {
-        this.nonce = nonce;
-        this.gasPrice = gasPrice;
-        this.gasLimit = gasLimit;
-        this.to = to;
-        this.value = value;
+    protected RawTransaction(final ITransaction transaction) {
+        this.transaction = transaction;
+    }
 
-        if (data != null) {
-            this.data = Numeric.cleanHexPrefix(data);
-        }
+    protected RawTransaction(
+            BigInteger nonce,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            BigInteger value,
+            String data) {
+        this(new LegacyTransaction(nonce, gasPrice, gasLimit, to, value, data));
     }
 
     public static RawTransaction createContractTransaction(
-            BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, BigInteger value,
+            BigInteger nonce,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            BigInteger value,
             String init) {
-
-        return new RawTransaction(nonce, gasPrice, gasLimit, "", value, init);
+        return new RawTransaction(
+                LegacyTransaction.createContractTransaction(
+                        nonce, gasPrice, gasLimit, value, init));
     }
 
     public static RawTransaction createEtherTransaction(
-            BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
+            BigInteger nonce,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
             BigInteger value) {
 
-        return new RawTransaction(nonce, gasPrice, gasLimit, to, value, "");
-
+        return new RawTransaction(
+                LegacyTransaction.createEtherTransaction(nonce, gasPrice, gasLimit, to, value));
     }
 
-    public static RawTransaction createFunctionCallTransaction(
+    public static RawTransaction createEtherTransaction(
+            long chainId,
+            BigInteger nonce,
+            BigInteger gasLimit,
+            String to,
+            BigInteger value,
+            BigInteger maxPriorityFeePerGas,
+            BigInteger maxFeePerGas) {
+        return new RawTransaction(
+                Transaction1559.createEtherTransaction(
+                        chainId, nonce, gasLimit, to, value, maxPriorityFeePerGas, maxFeePerGas));
+    }
+
+    public static RawTransaction createTransaction(
             BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to, String data) {
-        return createFunctionCallTransaction(nonce, gasPrice, gasLimit, to, BigInteger.ZERO, data);
+        return createTransaction(nonce, gasPrice, gasLimit, to, BigInteger.ZERO, data);
     }
 
-    public static RawTransaction createFunctionCallTransaction(
-            BigInteger nonce, BigInteger gasPrice, BigInteger gasLimit, String to,
-            BigInteger value, String data) {
+    public static RawTransaction createTransaction(
+            BigInteger nonce,
+            BigInteger gasPrice,
+            BigInteger gasLimit,
+            String to,
+            BigInteger value,
+            String data) {
 
-        return new RawTransaction(nonce, gasPrice, gasLimit, to, value, data);
+        return new RawTransaction(
+                LegacyTransaction.createTransaction(nonce, gasPrice, gasLimit, to, value, data));
+    }
+
+    public static RawTransaction createTransaction(
+            long chainId,
+            BigInteger nonce,
+            BigInteger gasLimit,
+            String to,
+            BigInteger value,
+            String data,
+            BigInteger maxPriorityFeePerGas,
+            BigInteger maxFeePerGas) {
+
+        return new RawTransaction(
+                Transaction1559.createTransaction(
+                        chainId,
+                        nonce,
+                        gasLimit,
+                        to,
+                        value,
+                        data,
+                        maxPriorityFeePerGas,
+                        maxFeePerGas));
     }
 
     public BigInteger getNonce() {
-        return nonce;
+        return transaction.getNonce();
     }
 
     public BigInteger getGasPrice() {
-        return gasPrice;
+        return transaction.getGasPrice();
     }
 
     public BigInteger getGasLimit() {
-        return gasLimit;
+        return transaction.getGasLimit();
     }
 
     public String getTo() {
-        return to;
+        return transaction.getTo();
     }
 
     public BigInteger getValue() {
-        return value;
+        return transaction.getValue();
     }
 
     public String getData() {
-        return data;
+        return transaction.getData();
+    }
+
+    public TransactionType getType() {
+        return transaction.getType();
+    }
+
+    public ITransaction getTransaction() {
+        return transaction;
     }
 }

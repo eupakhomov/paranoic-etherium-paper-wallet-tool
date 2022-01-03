@@ -1,9 +1,9 @@
 package io.betelgeuse.ethereum.pwg;
 
-/**
- * Credentials wrapper.
- */
+
+/** Credentials wrapper. */
 public class Credentials {
+
     private final ECKeyPair ecKeyPair;
     private final String address;
 
@@ -35,15 +35,20 @@ public class Credentials {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Credentials that = (Credentials) o;
 
-        if (ecKeyPair != null ? !ecKeyPair.equals(that.ecKeyPair) : that.ecKeyPair != null)
+        if (ecKeyPair != null ? !ecKeyPair.equals(that.ecKeyPair) : that.ecKeyPair != null) {
             return false;
-        return address != null ? address.equals(that.address) : that.address == null;
+        }
 
+        return address != null ? address.equals(that.address) : that.address == null;
     }
 
     @Override

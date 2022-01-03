@@ -6,6 +6,10 @@ import java.math.BigInteger;
 import java.security.Security;
 import java.util.Scanner;
 
+/**
+ * -p '...' -w  "e:\DCIM\100HPAIO\3.json" -t 0x988E3CA5Ed4E0d3eEeF189f37A994b5947Df22BF -a 150 -n 2
+ * https://badmofo.github.io/ethsend/
+ */
 public class Application {
 
     public static final String SWITCH_DIRECTORY = "-d";
@@ -16,8 +20,9 @@ public class Application {
     public static final String SWITCH_NONCE = "-n";
     public static final String SWITCH_VERIFY = "-v";
     public static final String SWITCH_SILENT = "-s";
-    public static final String SWITCH_GAS_PRICE = "-g";
     public static final String SWITCH_GAS_LIMIT = "-l";
+	public static final String SWITCH_MAX_TIPS = "-i";
+	public static final String SWITCH_MAX_FEE = "-f";
     public static final String SWITCH_HELP = "-h";
 
 	public static final String ARGUMENTS_ERROR = "ARGUMENTS ERROR";
@@ -44,7 +49,7 @@ public class Application {
 	private String targetAddress = null;
 
 	// nonce value for offline transaction
-	private Integer nonce = new Integer(0);
+	private Integer nonce = 0;
 
 	// amount [ethers] for offline transaction
 	private BigDecimal amount = new BigDecimal("0.01");
@@ -55,13 +60,16 @@ public class Application {
 	// silent mode, suppress command line output
 	private boolean silent = false;
 
-	// gas price to use with offline transaction
-    private BigInteger gasPrice = PaperWallet.GAS_PRICE_DEFAULT;
-
     // gas limit to use with offline transaction
     private BigInteger gasLimit = PaperWallet.GAS_LIMIT_DEFAULT;
 
-	public static void main(String[] args) throws Exception {
+    // max tips to miners (Gwei) - eg 5 Gwei
+	private String maxTips = "5";
+
+	// max overall fee (Gwei) - eg 200 Gwei
+	private String maxFee = "200";
+
+	public static void main(String[] args) {
 		Application app = new Application();
 		app.run(args);
 	}
@@ -103,10 +111,14 @@ public class Application {
                     nonce = Integer.valueOf(args[i]);
                     i++;
                     break;
-                case SWITCH_GAS_PRICE:
-                    gasPrice = new BigInteger(args[i]);
+				case SWITCH_MAX_TIPS:
+                    maxTips = args[i];
                     i++;
                     break;
+				case SWITCH_MAX_FEE:
+					maxFee = args[i];
+					i++;
+					break;
                 case SWITCH_GAS_LIMIT:
                     gasLimit = new BigInteger(args[i]);
                     i++;
@@ -177,14 +189,23 @@ public class Application {
 			PaperWallet pw = new PaperWallet(passPhrase, new File(walletFile));
 			BigInteger amountWei = Convert.toWei(amount.toPlainString(), Convert.Unit.ETHER).toBigInteger();
 
-			log("Target address: " + targetAddress);
-			log("Amount [Ether]: " + amount);
-			log("Nonce: " + nonce);
-			log("Gas price [Wei]: " + gasPrice);
-			log("Gas limit [Wei]: " + gasLimit);
+			BigInteger maxPriorityFeePerGas = Convert.toWei(maxTips, Convert.Unit.GWEI).toBigInteger();
+			BigInteger maxFeePerGas = Convert.toWei(maxFee, Convert.Unit.GWEI).toBigInteger();
 
-			String txData = pw.createOfflineTx(targetAddress, gasPrice, gasLimit, amountWei, BigInteger.valueOf(nonce));
-			String curlCmd = String.format("curl -X POST --data '{\"jsonrpc\":\"2.0\",\"method\":\"eth_sendRawTransaction\",\"params\":[\"%s\"],\"id\":1}' -H \"Content-Type: application/json\" https://mainnet.infura.io/<infura-token>", txData);
+			log("Target address:     " + targetAddress);
+			log("Amount [Ether]:     " + amount);
+			log("Nonce:              " + nonce);
+			log("Gas limit [Wei]:    " + gasLimit);
+			log("Max prio fee [Wei]: " + maxPriorityFeePerGas);
+			log("Max fee [Wei]:      " + maxFeePerGas);
+
+			String txData = pw.createOfflineTx(targetAddress,
+					gasLimit,
+					amountWei,
+					BigInteger.valueOf(nonce),
+					maxPriorityFeePerGas,
+					maxFeePerGas);
+			String curlCmd = String.format("Transaction body: %s", txData);
 
 			log(curlCmd);
 
@@ -197,15 +218,10 @@ public class Application {
 		return null;
 	}
 
-
 	private void readPassPhrase() {
 		if(passPhrase == null) {
 			Scanner scanner = new Scanner(System.in);
-
-			//  prompt for the user's name
 			System.out.print("Wallet pass phrase: ");
-
-			// get their input as a String
 			passPhrase = scanner.next();
 			scanner.close();
 		}
@@ -224,7 +240,7 @@ public class Application {
 		}
 		
 		log("Wallet file successfully created");
-		log(String.format("Wallet pass phrase: '%s'", pw.getPassPhrase()));
+		log(String.format("Wallet pass phrase: %s", pw.getPassPhrase()));
 		log(String.format("Wallet file location: %s", pw.getFile().getAbsolutePath()));
 
 		String html = WalletPageUtility.createHtml(pw);
@@ -254,10 +270,11 @@ public class Application {
         System.out.print("[-n nonce]");
         System.out.print("[-v]");
         System.out.print("[-s]");
-        System.out.print("[-g price]");
         System.out.print("[-l limit]");
+		System.out.print("[-i max tips]");
+		System.out.print("[-f max fee]");
         System.out.println("[-h]");
-        System.out.println("");
+        System.out.println();
 
         System.out.println("Options: ");
         System.out.println("  -d              Target directory for new wallet file");
@@ -268,8 +285,9 @@ public class Application {
         System.out.println("  -n              Nonce value for offline transaction");
         System.out.println("  -v              Verify the specified wallet file");
         System.out.println("  -s              Silent mode, suppress command line output");
-        System.out.println("  -g              Gas price for offline transaction");
         System.out.println("  -l              Gas limit for offline transaction");
+		System.out.println("  -i              Max tips to miners (priority fee) - check https://www.blocknative.com/gas-estimator");
+		System.out.println("  -f              Max overall fee - check https://www.blocknative.com/gas-estimator");
         System.out.println("  -h              Show help");
 
     }

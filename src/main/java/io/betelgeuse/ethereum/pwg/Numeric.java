@@ -9,8 +9,31 @@ import java.util.Arrays;
 public class Numeric {
 
     private static final String HEX_PREFIX = "0x";
+    private static final char[] HEX_CHAR_MAP = "0123456789abcdef".toCharArray();
 
-    private Numeric() {
+    private Numeric() {}
+
+    public static String cleanHexPrefix(String input) {
+        if (containsHexPrefix(input)) {
+            return input.substring(2);
+        } else {
+            return input;
+        }
+    }
+
+    public static String prependHexPrefix(String input) {
+        if (!containsHexPrefix(input)) {
+            return HEX_PREFIX + input;
+        } else {
+            return input;
+        }
+    }
+
+    public static boolean containsHexPrefix(String input) {
+        return !Strings.isEmpty(input)
+                && input.length() > 1
+                && input.charAt(0) == '0'
+                && input.charAt(1) == 'x';
     }
 
     public static BigInteger toBigInt(byte[] value, int offset, int length) {
@@ -23,27 +46,23 @@ public class Numeric {
 
     public static BigInteger toBigInt(String hexValue) {
         String cleanValue = cleanHexPrefix(hexValue);
-        return new BigInteger(cleanValue, 16);
+        return toBigIntNoPrefix(cleanValue);
     }
 
-    public static String cleanHexPrefix(String input) {
-        if (containsHexPrefix(input)) {
-            return input.substring(2);
-        } else {
-            return input;
-        }
+    public static BigInteger toBigIntNoPrefix(String hexValue) {
+        return new BigInteger(hexValue, 16);
     }
 
-    public static boolean containsHexPrefix(String input) {
-        return input.length() > 1 && input.charAt(0) == '0' && input.charAt(1) == 'x';
+    public static String toHexStringWithPrefix(BigInteger value) {
+        return HEX_PREFIX + value.toString(16);
     }
 
-    public static String prependHexPrefix(String input) {
-        if (!containsHexPrefix(input)) {
-            return HEX_PREFIX + input;
-        } else {
-            return input;
-        }
+    public static String toHexStringNoPrefix(BigInteger value) {
+        return value.toString(16);
+    }
+
+    public static String toHexStringNoPrefix(byte[] input) {
+        return toHexString(input, 0, input.length, false);
     }
 
     public static String toHexStringWithPrefixZeroPadded(BigInteger value, int size) {
@@ -62,7 +81,7 @@ public class Numeric {
         }
 
         if (length < size) {
-            result = zeros(size - length) + result;
+            result = Strings.zeros(size - length) + result;
         }
 
         if (withPrefix) {
@@ -70,65 +89,6 @@ public class Numeric {
         } else {
             return result;
         }
-    }
-
-    public static String toHexStringNoPrefix(BigInteger value) {
-        return value.toString(16);
-    }
-
-    public static String zeros(int n) {
-        return repeat('0', n);
-    }
-
-    public static String repeat(char value, int n) {
-        return new String(new char[n]).replace("\0", String.valueOf(value));
-    }
-
-    public static byte[] hexStringToByteArray(String input) {
-        String cleanInput = cleanHexPrefix(input);
-
-        int len = cleanInput.length();
-
-        if (len == 0) {
-            return new byte[] {};
-        }
-
-        byte[] data;
-        int startIdx;
-        if (len % 2 != 0) {
-            data = new byte[(len / 2) + 1];
-            data[0] = (byte) Character.digit(cleanInput.charAt(0), 16);
-            startIdx = 1;
-        } else {
-            data = new byte[len / 2];
-            startIdx = 0;
-        }
-
-        for (int i = startIdx; i < len; i += 2) {
-            data[(i + 1) / 2] = (byte) ((Character.digit(cleanInput.charAt(i), 16) << 4)
-                    + Character.digit(cleanInput.charAt(i+1), 16));
-        }
-        return data;
-    }
-
-    public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (withPrefix) {
-            stringBuilder.append("0x");
-        }
-        for (int i = offset; i < offset + length; i++) {
-            stringBuilder.append(String.format("%02x", input[i] & 0xFF));
-        }
-
-        return stringBuilder.toString();
-    }
-
-    public static String toHexString(byte[] input) {
-        return toHexString(input, 0, input.length, true);
-    }
-
-    public static String toHexStringNoPrefix(byte[] input) {
-        return toHexString(input, 0, input.length, false);
     }
 
     public static byte[] toBytesPadded(BigInteger value, int length) {
@@ -154,7 +114,51 @@ public class Numeric {
         return result;
     }
 
-    public static String toHexStringWithPrefix(BigInteger value) {
-        return HEX_PREFIX + value.toString(16);
+    public static byte[] hexStringToByteArray(String input) {
+        String cleanInput = cleanHexPrefix(input);
+
+        int len = cleanInput.length();
+
+        if (len == 0) {
+            return new byte[] {};
+        }
+
+        byte[] data;
+        int startIdx;
+        if (len % 2 != 0) {
+            data = new byte[(len / 2) + 1];
+            data[0] = (byte) Character.digit(cleanInput.charAt(0), 16);
+            startIdx = 1;
+        } else {
+            data = new byte[len / 2];
+            startIdx = 0;
+        }
+
+        for (int i = startIdx; i < len; i += 2) {
+            data[(i + 1) / 2] =
+                    (byte)
+                            ((Character.digit(cleanInput.charAt(i), 16) << 4)
+                                    + Character.digit(cleanInput.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public static String toHexString(byte[] input, int offset, int length, boolean withPrefix) {
+        final String output = new String(toHexCharArray(input, offset, length, withPrefix));
+        return withPrefix ? new StringBuilder(HEX_PREFIX).append(output).toString() : output;
+    }
+
+    private static char[] toHexCharArray(byte[] input, int offset, int length, boolean withPrefix) {
+        final char[] output = new char[length << 1];
+        for (int i = offset, j = 0; i < length; i++, j++) {
+            final int v = input[i] & 0xFF;
+            output[j++] = HEX_CHAR_MAP[v >>> 4];
+            output[j] = HEX_CHAR_MAP[v & 0x0F];
+        }
+        return output;
+    }
+
+    public static String toHexString(byte[] input) {
+        return toHexString(input, 0, input.length, true);
     }
 }
