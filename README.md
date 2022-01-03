@@ -28,7 +28,7 @@ The result of the Maven build is an executable JAR file.
 
 ### Creating a Paper Wallet
  
-Use the following command to create a paper wallet.
+Use the following command to create a paper wallet (underlying format is BIP39).
 
 ```
 java -jar target/epwg-0.4.0-SNAPSHOT.jar -d C:\Users\Admin\AppData\Local\Temp -p TestPassPhrase
@@ -70,7 +70,7 @@ Pass phrase: TestPassPhrase
 
 ### Creating an offline Transaction
 
-The tool further allows to create an offline transaction for provided wallet details
+The tool further allows to create an offline EIP-1559 transaction for provided wallet details
 
 ```
 java -jar target/epwg-0.4.0-SNAPSHOT.jar -p TestPassPhrase -w  "C:\Users\Admin\AppData\Local\Temp\UTC--2017-01-14T11-34-23.830000000Z--b86bab51c139f9662ccea6547a5e34e13d144bb0.json" -t 0x025403ff4c543c660423543a9c5a3cc2a02e2f1f -a 0.0123
