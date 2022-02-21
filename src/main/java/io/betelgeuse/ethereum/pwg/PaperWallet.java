@@ -16,7 +16,7 @@ public class PaperWallet {
 
 	// 21'000 gas - cost of simple transaction.
 	// Check https://ethereum.stackexchange.com/questions/5845/how-are-ethereum-transaction-costs-calculated
-	public static BigInteger GAS_LIMIT_DEFAULT = BigInteger.valueOf(21_000L);
+	public static BigInteger GAS_LIMIT_DEFAULT = BigInteger.valueOf(150_000L);
 
 	private static PassPhraseUtility passPhraseUtility = new PassPhraseUtility();
 
